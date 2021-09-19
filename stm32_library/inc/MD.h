@@ -16,4 +16,6 @@ public:
 	    HAL_GPIO_WritePin(Port_B, PIN_B, pwm <= 0);
 	    __HAL_TIM_SET_COMPARE(pwm_Port, pwm_Channel, pwm);
     }
+
+    
 };
