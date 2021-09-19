@@ -1,5 +1,6 @@
 #include"../inc/accel.h"
 
-int proportional::operator(){
-    
+template<typename T>
+void proportional<T>::operator()(int TargetSpeed, int TargetTime){
+    MD();
 }
