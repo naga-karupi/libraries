@@ -8,10 +8,9 @@ class I_SpeedChange{
 
 protected:
     int TargetSpeed, TargetTime, NowSpeed;
-    T MD;
+    const T*MD;
 
 public:
-    I_SpeedChange() = default;
     virtual ~I_SpeedChange() = 0;
 };
 
@@ -19,25 +18,22 @@ template<class T>
 class proportional : virtual public I_SpeedChange<T>{
     
 public:
-    proportional() = default;
-    ~proportional() = default;
-    void operator ()(int, int);
+    void operator()(int, int);
 };
 
 template<class T> 
-class sin{
+class sins : virtual public I_SpeedChange<T>{
 
 public:
-    sin() = default;
-    ~sin() = default;
-    void operator ()(int, int);
+    void operator()(int, int);
 };
 
 template<class T>
-class output : public proportional<T>{
+class output : public proportional<T>, public sins<T>{
 
 public:
-    void set_MD(T _MD){
-        I_SpeedChange::MD = _MD;
+    output(T*_MD){
+        I_SpeedChange<T>::MD = _MD;
     }
+    ~output() = default;
 };
