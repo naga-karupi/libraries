@@ -1,6 +1,8 @@
 # libraries
 いろいろなライブラリ
 
+今後まだまだ拡張予定
+
 自由にpullおk
 
 使えるやつはmaster 
