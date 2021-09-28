@@ -30,12 +30,12 @@ class differential {
     T num, re,im ,re_s, im_s;
     static T const_num;
     
-    void constant(){re_s= 1;          im_s = 0;             }
-    void x()  {re_s = num;            im_s = 1;             }
-    void xx() {re_s = num*num;        im_s = 2*num;         }
-    void exp(){re_s = std::exp(num); im_s = re_s;          }
+    void constant(){re_s= 1;          im_s = 0;           }
+    void x()  {re_s = num;            im_s = 1;           }
+    void xx() {re_s = num*num;        im_s = 2*num;       }
+    void exp(){re_s = std::exp(num); im_s = re_s;         }
     void log(){if(!num)num = 1; 
-                re_s = std::log(num); im_s = 1/num;        }
+               re_s = std::log(num); im_s = 1/num;        }
     void sin(){re_s = std::sin(num); im_s = std::cos(num);}
 
     void set(void(*function)()){
@@ -59,8 +59,8 @@ public:
     T dfunc(){return const_num*im;}
 
     T operator()();
-    constexpr differential* operator + (differential*);
-    constexpr differential* operator - (differential*);
-    constexpr differential* operator * (differential*);
-    constexpr differential* operator / (differential*);
+    constexpr differential* operator + (const differential&);
+    constexpr differential* operator - (const differential&);
+    constexpr differential* operator * (const differential&);
+    constexpr differential* operator / (const differential&);
 };
