@@ -1,5 +1,7 @@
+//要再プログラム
+
 #pragma once
-#include<math.h>
+#include<cmath>
 #include"../../Arduino_Library/inc/MD.h"
 #include"../../stm32_library/inc/MD.h"
 
@@ -22,14 +24,14 @@ public:
 };
 
 template<class T> 
-class sins : virtual public I_SpeedChange<T>{
+class sin : virtual public I_SpeedChange<T>{
 
 public:
     void operator()(int, int);
 };
 
 template<class T>
-class output : public proportional<T>, public sins<T>{
+class output : public proportional<T>, public sin<T>{
 
 public:
     output(T*_MD){

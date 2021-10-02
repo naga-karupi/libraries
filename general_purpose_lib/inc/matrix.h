@@ -4,7 +4,7 @@
 #include<vector>
 
 
-namespace matrix{
+namespace matrix{//クラスにしようそうしよう
 
     template<typename T, typename T2>
     constexpr auto operator + (T& A_Matrix, T2& B_Matrix){
@@ -116,6 +116,8 @@ namespace matrix{
         }
 
         A_sqr_Inverse_Matrix = Inverse_Matrix(A_sqr_Matrix);
+
+        for(int i = 0; i < )
     }
 
     
