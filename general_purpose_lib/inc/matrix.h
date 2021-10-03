@@ -117,7 +117,7 @@ namespace matrix{//クラスにしようそうしよう
 
         A_sqr_Inverse_Matrix = Inverse_Matrix(A_sqr_Matrix);
 
-        for(int i = 0; i < )
+        for(int i = 0; i < ){}
     }
 
     

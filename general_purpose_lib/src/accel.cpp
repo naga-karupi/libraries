@@ -1,3 +1,5 @@
+//要再プログラム
+
 #include"../inc/accel.h"
 
 template<typename T>

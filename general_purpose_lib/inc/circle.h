@@ -24,15 +24,16 @@ class pos2 {
     mm_int_t y_coordinate = 0;
     rad_t angle = 0;
 
-    int spd_func(tim_f_t sec, int spd_type);
+    int spd_func(tim_f_t sec, func spd_type);
+    int turning_func(tim_f_t sec, func spd_type);
 
     friend void MD1(mm_int_t, mm_int_t);
     friend void MD2(mm_int_t, mm_int_t);
 
 public:
 
-    void circle_r(mm_int_t x_coordinate_to, mm_int_t y_coordinate_to, float beat, mm_int_t radius, int spd_type);
-    void circle_c(float beat, mm_int_t radius, rad_t angle_to, mm_int_t c_posi_x, mm_int_t c_posi_y, int spd_type);
-    void turn(float beat, rad_t angle, int spd_type);
-    void straight(int beat, mm_int_t coordinate_x_to, mm_int_t coordinate_y_to, int spd_type);
+    void circle_r(mm_int_t x_coordinate_to, mm_int_t y_coordinate_to, float beat, mm_int_t radius, func spd_type);
+    void circle_c(float beat, mm_int_t radius, rad_t angle_to, mm_int_t c_posi_x, mm_int_t c_posi_y, func spd_type);
+    void turn(float beat, rad_t angle, func spd_type);
+    void straight(int beat, mm_int_t coordinate_x_to, mm_int_t coordinate_y_to, func spd_type);
 };
