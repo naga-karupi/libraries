@@ -4,11 +4,11 @@
 #include<cmath>
 #include<stdint.h>
 
-class MD{
+class I_MD{
     virtual ~MD() = 0
 }
 
-class MD_Arduino{
+class MD_Arduino : private I_MD{
     const uint8_t PIN_A, PIN_B, pwm_pin;
     int pwm;
 public:
@@ -22,7 +22,7 @@ public:
     }
 };
 
-class MD_stm{
+class MD_stm : private I_MD{
     GPIO_TypeDef *Port_A; uint16_t PIN_A;
     GPIO_TypeDef *Port_B; uint16_t PIN_B;
 
