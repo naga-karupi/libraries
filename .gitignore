@@ -1,0 +1,14 @@
+/Drivers
+/Includes
+/STM32F446RETX_FLASH.ld
+/STM32F446RETX_RAM.ld
+/undercarriage_cpp.ioc
+/Core/Startup
+/.project
+/.cproject
+/.mxproject
+/stm32cubeide.project.prefs-.settings
+/Debug
+/.settings/
+/Debug.launch
+/undercarriage_cpp Debug.launch
