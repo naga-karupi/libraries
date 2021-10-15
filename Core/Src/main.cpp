@@ -139,37 +139,79 @@ int main(void)
   MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
 
     MD_stm test1(IN_A1_GPIO_Port, IN_A1_Pin, IN_B1_GPIO_Port, IN_B1_Pin, &htim1, TIM_CHANNEL_4);
     MD_stm test2(IN_A2_GPIO_Port, IN_A2_Pin, IN_B2_GPIO_Port, IN_B2_Pin, &htim1, TIM_CHANNEL_2);
 
-    SpeedType_PID PID1(0.01, 0.4f);
-    PosType_PID PID2(0.01, 0.4f);
+    SpeedType_PID PID1(0.1, 3);
+    PosType_PID PID2(0.1, 3);
 
-    constexpr uint32_t init_spd = 10000;
+    constexpr uint32_t init_spd_pwm = 10000;
 
     pos2 test_pos(test1, test2);
 
-    test1 = init_spd;
-	test2 = init_spd;
+    test1 = init_spd_pwm;
+	test2 = init_spd_pwm;
 
-	uint32_t now_spd;
+	uint32_t now_pwm_r = init_spd_pwm;
+	uint32_t now_pwm_l = init_spd_pwm;
 
-	uint32_t target_val = 1024;
+	uint32_t target_val_rpm = 1000;
 
-	uint32_t encoder_val;
+	uint32_t encoder_val1_rpm, encoder_val2_rpm;
+	uint32_t change_encoder1_rpm;
+	float k1, k2;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
     while (1)
     {
-    	encoder_val = __HAL_TIM_GET_COUNTER(&htim1);
-    	int dif_encoder = target_val - encoder_val;
+    	change_encoder1_rpm = __HAL_TIM_GET_COUNTER(&htim2);
 
-    	now_spd += dif_encoder*0.4;
+    	HAL_Delay(10);//control cycle 10Hz
+    	/*
+    	 * rpm/15 = t
+    	 * t   : time
+    	 * rpm : revolution per minute
+    	 * acceleration max : 0.25 [m/s^2]
+    	 */
 
-    	HAL_Delay(10);
+    	if(change_encoder1_rpm == __HAL_TIM_GET_COUNTER(&htim2)){
+    		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+    	}else{
+    		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+    	}
+
+    	if(1){
+			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+		}else{
+			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+		}
+
+    	k1 = now_spd_r / __HAL_TIM_GET_COUNTER(&htim2)/10;
+    	k2 = now_spd_l / __HAL_TIM_GET_COUNTER(&htim3)/10;
+
+    	encoder_val1 = __HAL_TIM_GET_COUNTER(&htim2);
+    	encoder_val2 = __HAL_TIM_GET_COUNTER(&htim3);
+
+
+
+    	__HAL_TIM_GET_COUNTER(&htim2) = 0;
+    	__HAL_TIM_GET_COUNTER(&htim3) = 0;
+
+
+    	int dif_encoder1 = target_val - encoder_val1;
+    	int dif_encoder2 = target_val - encoder_val2;
+
+    	now_spd_r += k1*dif_encoder1*0 + k1*PID1(dif_encoder1)*0;
+    	now_spd_l += k2*dif_encoder2*0 + k2*PID2(dif_encoder2)*0;
+
+    	test1 = now_spd_r;
+    	test2 = now_spd_l;
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

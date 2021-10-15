@@ -23,7 +23,7 @@ class Difference_Equation{
     static constexpr uint32_t size = 4;
 
     uint32_t suff = 0;
-    array<float, size> inputs;
+    array<float, size> inputs = {0};
     int sigma = 0;
 
     void reset_sigma(){sigma = 0;}

@@ -12,6 +12,8 @@ public:
     virtual ~I_PID() = 0;
 };
 
+
+
 class PosType_PID : virtual private I_PID{
     
 public:

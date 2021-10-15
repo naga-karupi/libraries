@@ -1,6 +1,8 @@
 #include"../../Inc/inc/PID.h"
 #include"../../Inc/inc/calculus.h"
 
+I_PID::~I_PID(){}
+
 float PosType_PID::operator()(int diff){
 	set_inputs(diff);
     const float P = p_gain*this->proportional();
