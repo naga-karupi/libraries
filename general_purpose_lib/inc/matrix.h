@@ -119,6 +119,4 @@ namespace matrix{//クラスにしようそうしよう
 
         for(int i = 0; i < ){}
     }
-
-    
 }

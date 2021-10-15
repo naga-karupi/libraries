@@ -271,7 +271,7 @@ void pos2::turn(float beat, rad_t angle_to, func spd_type){
 
     ave_velocity = 0;
     ave_angular_v = angle_to / sec;
-
+    
     
 }//write fin
 
