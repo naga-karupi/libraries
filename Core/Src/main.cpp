@@ -22,8 +22,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include<array>
 #include<cmath>
+#include <bits/stdc++.h>
 #include"../Inc/stm32_library/inc/MD.hpp"
+#include"../Inc/stm32_library/inc/Rotary_Encoder.h"
+#include"../Inc/inc/rad_to_pulse.h"
 #include"../Inc/inc/circle.h"
 #include"../Inc/inc/PID.h"
 /* USER CODE END Includes */
@@ -138,39 +142,62 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
-  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 
-    MD_stm test1(IN_A1_GPIO_Port, IN_A1_Pin, IN_B1_GPIO_Port, IN_B1_Pin, &htim1, TIM_CHANNEL_4);
-    MD_stm test2(IN_A2_GPIO_Port, IN_A2_Pin, IN_B2_GPIO_Port, IN_B2_Pin, &htim1, TIM_CHANNEL_2);
+    MD_stm Move_1(IN_A1_GPIO_Port, IN_A1_Pin, IN_B1_GPIO_Port, IN_B1_Pin, &htim1, TIM_CHANNEL_4);
+    MD_stm Move_2(IN_A2_GPIO_Port, IN_A2_Pin, IN_B2_GPIO_Port, IN_B2_Pin, &htim1, TIM_CHANNEL_2);
 
-    SpeedType_PID PID1(0.1, 3);
-    PosType_PID PID2(0.1, 3);
+    stm32_Rotary_Encoder Encoder_Right(&htim2);
+	stm32_Rotary_Encoder Encoder_Left(&htim3);
 
-    constexpr uint32_t init_spd_pwm = 10000;
+	constexpr int rotary_encoder_resolution_r = -800,
+			      rotary_encoder_resolution_l = -400;
 
-    pos2 test_pos(test1, test2);
+	rad_to_pulse change_r(-800);
+	rad_to_pulse change_l(-400);
 
-    test1 = init_spd_pwm;
-	test2 = init_spd_pwm;
+	float Ku_r = 800;
+	float Tu_r = 0.6;
+	float Ku_l = 400;
+	float Tu_l = 0.7;
+    PosType_PID PID1(0.01, 0.4*Ku_r, 0.5*Tu_r, 0.125*Tu_r);
+    PosType_PID PID2(0.01, 0.4*Ku_l, 0.5*Tu_l, 0.125*Tu_l);
 
-	uint32_t now_pwm_r = init_spd_pwm;
-	uint32_t now_pwm_l = init_spd_pwm;
+    constexpr int32_t init_spd_pwm = 0;
+	int32_t now_pwm_r = init_spd_pwm;
+	int32_t now_pwm_l = init_spd_pwm;
 
-	uint32_t target_val_rpm = 1000;
+	std::array<uint32_t, 2> Encoder_Count_r = {0}, Encoder_Count_l = {0};
+	float Angular_Velocity_r, Angular_Velocity_l;
 
-	uint32_t encoder_val1_rpm, encoder_val2_rpm;
-	uint32_t change_encoder1_rpm;
-	float k1, k2;
+	float target_spd = 0;//change_r(target_val_rad);
+	//change_l(target_val_rad);
+
+	char variable[2]{
+		48,//0
+		120//x
+	};
+
+	char value[5];
+	value[4] = 10;
+	std::array<int, 4> num;
+
+	int k1, k2;
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+uint32_t counter = 0;
+uint32_t enc_counter = 0;
+uint32_t tim_counter = 0;
+
+float accel = 0.25;
+constexpr float radius = 0.040;
     while (1)
     {
-    	change_encoder1_rpm = __HAL_TIM_GET_COUNTER(&htim2);
-
-    	HAL_Delay(10);//control cycle 10Hz
+    	HAL_GPIO_TogglePin (LED1_GPIO_Port, LED1_Pin);
     	/*
     	 * rpm/15 = t
     	 * t   : time
@@ -178,40 +205,94 @@ int main(void)
     	 * acceleration max : 0.25 [m/s^2]
     	 */
 
-    	if(change_encoder1_rpm == __HAL_TIM_GET_COUNTER(&htim2)){
-    		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-    	}else{
-    		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+    	HAL_Delay(10);//control cycle about 100Hz
+
+    	tim_counter++;
+    	if(tim_counter > 1000){
+    		while(1);
     	}
 
-    	if(1){
-			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-		}else{
-			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+    	{//spd setter
+    		if(tim_counter < 200){
+    			target_spd += 0.01*accel/ (radius);
+    		}else if(tim_counter < 800){
+
+    		}else{
+    			target_spd-= 0.01*accel/ (radius);
+    		}
+    	}
+/*
+    	if(__HAL_TIM_GET_COUNTER(&htim2) == 0){
+    		__HAL_TIM_GET_COUNTER(&htim2) = 1;
+    	}
+    	if(__HAL_TIM_GET_COUNTER(&htim3) == 0){
+			__HAL_TIM_GET_COUNTER(&htim3) = 1;
 		}
 
-    	k1 = now_spd_r / __HAL_TIM_GET_COUNTER(&htim2)/10;
-    	k2 = now_spd_l / __HAL_TIM_GET_COUNTER(&htim3)/10;
+    	k1 = now_pwm_r / __HAL_TIM_GET_COUNTER(&htim2)*0.1;
+    	k2 = now_pwm_l / __HAL_TIM_GET_COUNTER(&htim3)*0.1;
 
-    	encoder_val1 = __HAL_TIM_GET_COUNTER(&htim2);
-    	encoder_val2 = __HAL_TIM_GET_COUNTER(&htim3);
+*/
+    	TIM_HandleTypeDef*htim = &htim2;
+    	enc_counter += __HAL_TIM_GET_COUNTER(htim);
+    	counter++;
+    	if(counter == 10){//get transmit num
+    		num[0] = (0xF000&enc_counter)/0x1000;
+    		num[1] = (0x0F00&enc_counter)/0x0100;
+    		num[2] = (0x00F0&enc_counter)/0x0010;
+			num[3] = (0x000F&enc_counter)/0x0001;
+
+			for(int i = 0; i < 4; i++){
+				if(num[i] <= 9 && num[i] >= 0){
+					value[i] = num[i] + 48;//num change to character of num
+				}else if(num[i] <= 15 && num[i] >= 10){
+					value[i] = num[i] + 55;//16 bit num from 10 to 15 change to character of A to F
+				}else{
+					value[i] = 89;//y
+				}
+				enc_counter = 0;
+				counter = 0;
+			}
+
+    		HAL_UART_Transmit(&huart2, (uint8_t*)variable, sizeof(variable), 0xff);
+
+    		HAL_UART_Transmit(&huart2, (uint8_t*)value, sizeof(value), 0xff);
+
+			for(int i = 0; i < 4; i++){
+				value[i] = 90;//z
+			}
+    	}
+
+    	Encoder_Count_r[1] = Encoder_Count_r[0];
+    	Encoder_Count_r[0] = Encoder_Right();
+    	Encoder_Count_l[1] = Encoder_Count_l[0];
+    	Encoder_Count_l[0] = Encoder_Left();
+
+    	k1 = 1;
+    	k2 = 1;
+    	if(Encoder_Count_r[0] > 0xffff/2){
+    		Encoder_Count_r[0] = 0xffff - Encoder_Count_r[0];
+    		k1 = -1;
+    	}
+
+    	if(Encoder_Count_l[0] > 0xffff/2){
+			Encoder_Count_l[0] = 0xffff - Encoder_Count_l[0];
+			k2 = -1;
+		}
+
+    	Angular_Velocity_r = (Encoder_Count_r[0]) * 2*M_PI / (rotary_encoder_resolution_r*2) / 0.01*k1;
+    	Angular_Velocity_l = (Encoder_Count_l[0]) * 2*M_PI / (rotary_encoder_resolution_l) / 0.01*k2;
+
+    	float dif_spd_r = target_spd - Angular_Velocity_r;
+    	float dif_spd_l = 2*M_PI - Angular_Velocity_l;
+
+    	now_pwm_r += PID1(dif_spd_r);
+    	now_pwm_l += PID2(dif_spd_l);
 
 
 
-    	__HAL_TIM_GET_COUNTER(&htim2) = 0;
-    	__HAL_TIM_GET_COUNTER(&htim3) = 0;
-
-
-    	int dif_encoder1 = target_val - encoder_val1;
-    	int dif_encoder2 = target_val - encoder_val2;
-
-    	now_spd_r += k1*dif_encoder1*0 + k1*PID1(dif_encoder1)*0;
-    	now_spd_l += k2*dif_encoder2*0 + k2*PID2(dif_encoder2)*0;
-
-    	test1 = now_spd_r;
-    	test2 = now_spd_l;
-
-
+    	Move_1 = now_pwm_r;
+    	//Move_2 = now_pwm_l;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -546,7 +627,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 9000;
+  htim2.Init.Period = 65535;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI1;

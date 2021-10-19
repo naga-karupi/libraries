@@ -3,7 +3,8 @@
 
 I_PID::~I_PID(){}
 
-float PosType_PID::operator()(int diff){
+float PosType_PID::operator()(float diff){
+
 	set_inputs(diff);
     const float P = p_gain*this->proportional();
     const float I = i_gain*this->integral();
@@ -12,7 +13,7 @@ float PosType_PID::operator()(int diff){
     return P+I+D;
 }
 
-float SpeedType_PID::operator()(int diff){
+float SpeedType_PID::operator()(float diff){
 	this->set_inputs(diff);
     const float P = p_gain*this->first_order_Difference_Equation();
     const float I = i_gain*this->proportional();
