@@ -37,7 +37,7 @@ using std::array;
 
 template<typename T>
 class I_Omni{
-    virtual T operator()();
+    virtual T operator()(T x_spd, T y_spd, T angular_v);
 };
 
 template<typename T>
@@ -47,7 +47,7 @@ class Three_Wheel_Omni : public I_Omni<T>{
 public:
     Three_Wheel_Omni();
     ~Three_Wheel_Omni();
-    array<T, 3> operator ()(T, T, T)override;  
+    array<T, 3> operator ()(T x_spd, T y_spd, T angular_v)override;  
 };
 
 template<typename T>
@@ -57,7 +57,7 @@ class inv_Three_Wheel_Omni : public I_Omni<T>{
 public:
     inv_Three_Wheel_Omni();
     ~inv_Three_Wheel_Omni();
-    array<T, 3> operator()(T, T, T)override;
+    array<T, 3> operator()(T x_spd, T y_spd, T angular_v)override;
 };
 
 template<typename T>
@@ -67,7 +67,7 @@ class Four_Wheel_Omni_1 : public I_Omni<T> {
 public:
     Four_Wheel_Omni_1();
     ~Four_Wheel_Omni_1();
-    array<T, 4> operator()(T, T, T)override;
+    array<T, 4> operator()(T x_spd, T y_spd, T angular_v)override;
 };
 
 template<typename T>
@@ -77,5 +77,5 @@ class Four_Wheel_Omni_2 : public I_Omni<T>{
 public:
     Four_Wheel_Omni_2();
     ~Four_Wheel_Omni_2();
-    array<T, 4> operator()(T, T, T)override;
+    array<T, 4> operator()(T x_spd, T y_spd, T angular_v)override;
 };
