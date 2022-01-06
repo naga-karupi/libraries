@@ -176,10 +176,12 @@ int pos2::turning_func(tim_f_t sec, func spd_type){
 
             while(sec > sum_sec){
                 sum_sec += increase_sec;
-                angular_v = coefficient*sin(sum_sec*2/(sec*M_PI));
+                velocity = confitient*sin(sum_sec*2/(sec*M_PI));
+                angular_v = velocity*raito;
 
-                MD1(0, angular_v);
-                MD2(0, angular_v);
+                MD1 = velocity + angular_v;
+                MD2 = velocity - angular_v;
+                HAL_Delay(1000*sec*C_PERIOD);
             }
 
             return 0;

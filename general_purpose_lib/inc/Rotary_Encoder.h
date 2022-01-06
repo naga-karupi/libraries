@@ -10,13 +10,13 @@ public:
 
 class Arduino_Rotary_Encoder{
     
-}
+};
 
 class stm32_Rotary_Encoder : private I_Rotary_Encoder{
-    TIMHandleTypeDef*htim;
+    TIM_HandleTypeDef*htim;
 public:;
-    stm32_Rotary_Encoder(TIMHandleTypeDef *_htim):htim(_htim){
-        HAL_TIM_Encoder_Start(htim);
+    stm32_Rotary_Encoder(TIM_HandleTypeDef *_htim):htim(_htim){
+        HAL_TIM_Encoder_Start(htim, TIM_CHANNEL_ALL);
     }
     
     uint32_t operator()(){
@@ -24,4 +24,4 @@ public:;
         __HAL_TIM_GET_COUNTER(htim) = 0;
         return counter;
     }
-}
+};
