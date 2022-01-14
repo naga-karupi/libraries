@@ -1,16 +1,13 @@
 #include"../inc/Omni.h"
+#include"Dense"
 
-template<typename T>
-std::array<T, 3> Three_Wheel_Omni<T>::operator()(T _x, T _y, T _theta){
-    x = _x; y = _y; theta = _theta;
-}
-
-template<typename T>
-typename Four_Wheel_Omni_1::Fourwheel_Omni_1(){
+void three_wheel_omni::operator()(float x_spd, float y_spd, float angular_v){
     
 }
 
-template<typename T>
-std::array<T, 4> operator()(T x_spd, T y_spd, T angular_v){
-    
+void four_wheel_omni_1::operator() (float x_spd, float y_spd, float angular_v){
+    Eigen::Vector3f input;
+    input << x_spd, y_spd, angular_v;
+
+    wheel = omni_matrix * input;
 }

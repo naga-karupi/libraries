@@ -32,60 +32,58 @@ four omni wheel 2
 */
 
 #include<array>
-#include<Eigen/Dense>
+#include"Dense"
 
-template<typename T>
-class I_Omni{
-    virtual T operator()(T x_spd, T y_spd, T angular_v);
+class I_omni{
+    virtual void operator()(float x_spd, float y_spd, float angular_v) = 0;
 };
 
-template<typename T>
-class Three_Wheel_Omni : public I_Omni<T>{
-    T x, y, theta;
-    std::array<T, 3> wheel = {0};
+class three_wheel_omni : public I_omni{
+    float x, y, theta;
+    Eigen::Vector3f wheel;
+    wheel = 0, 0, 0;
 public:
-    Three_Wheel_Omni();
-    ~Three_Wheel_Omni();
-    std::array<T, 3> operator ()(T x_spd, T y_spd, T angular_v)override;  
+    three_wheel_omni();
+    ~three_wheel_omni();
+    void operator ()(float x_spd, float y_spd, float angular_v)override;  
 };
 
-template<typename T>
-class inv_Three_Wheel_Omni : public I_Omni<T>{
-    T x, y, theta;
-    std::array<T, 3> wheel = {0};
-        
-    constexpr float coeficient = 1/std::sqrtf(2);
-    constexpr float center_to_wheel_length = 0.187;
-
-    Eigen::Matrix<float, 3, 4> omni_matrix = {
-        {-coeficient, coeficient, center_to_wheel_length},
-        {coeficient, coeficient, center_to_wheel_length},
-        {coeficient, -coeficient, center_to_wheel_length},
-        {-coeficient, -coeficient, center_to_wheel_length},
-    }
+class inv_three_wheel_omni : public I_omni{
+    float x, y, theta;
+    Eigen::Vector3f wheel;
+    wheel << 0, 0, 0;
 
 public:
-    inv_Three_Wheel_Omni();
-    ~inv_Three_Wheel_Omni();
-    std::array<T, 3> operator()(T x_spd, T y_spd, T angular_v)override;
+    inv_three_wheel_omni(float machine);
+    ~inv_three_wheel_omni();
+    void operator()(float x_spd, float y_spd, float angular_v)override;
 };
 
-template<typename T>
-class Four_Wheel_Omni_1 : public I_Omni<T> {
-    T x, y, theta;
-    std::array<T, 4> wheel = {0};
+class four_wheel_omni_1 : public I_omni{
+    Eigen::Vector4f wheel;
+    wheel << 0, 0, 0, 0;
+
+    const float coeficient = 1/std::sqrt(2);
+    const float length_center_to_wheel;
+
+    const Eigen::MatrixXd<float, 3, 4> omni_matrix;
+    omni_matrix <<
+        -coeficient, coeficient, length_center_to_wheel,
+        coeficient, coeficient, length_center_to_wheel,
+        coeficient, -coeficient, length_center_to_wheel,
+        -coeficient, -coeficient, length_center_to_wheel;
+
 public:
-    Four_Wheel_Omni_1();
-    ~Four_Wheel_Omni_1();
-    std::array<T, 4> operator()(T x_spd, T y_spd, T angular_v)override;
+    four_wheel_omni_1(float _length_center_to_wheel) : length_center_to_wheel(_length_center_to_wheel){}
+    ~four_wheel_omni_1();
+    inline void operator()(float x_spd, float y_spd, float angular_v)override;
 };
 
-template<typename T>
-class Four_Wheel_Omni_2 : public I_Omni<T>{
-    T x, y, theta;
-    std::array<T, 4> wheel = {0};
+class four_wheel_omni_2 : public I_omni{
+    float x, y, theta;
+    std::array<float, 4> wheel = {0};
 public:
-    Four_Wheel_Omni_2();
-    ~Four_Wheel_Omni_2();
-    std::array<T, 4> operator()(T x_spd, T y_spd, T angular_v)override;
+    four_wheel_omni_2();
+    ~four_wheel_omni_2();
+    void operator()(float x_spd, float y_spd, float angular_v)override;
 };
