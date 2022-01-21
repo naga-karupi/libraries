@@ -3,14 +3,23 @@
 #include<stdint.h>
 #include<cmath>
 
+
+#ifndef ROTARY_ENCODER_HEADER
+#define ROTARY_ENCODER_HEADER
+
 class I_Rotary_Encoder{
 public:
     virtual ~I_Rotary_Encoder() = 0;
 };
 
+#ifdef ARDUINO_LIBS_NAGA
 class Arduino_Rotary_Encoder{
     
 };
+
+#endif
+
+#ifdef STM32_LIB_NAGA
 
 class stm32_Rotary_Encoder : private I_Rotary_Encoder{
     TIM_HandleTypeDef*htim;
@@ -25,3 +34,7 @@ public:;
         return counter;
     }
 };
+
+#endif
+
+#endif

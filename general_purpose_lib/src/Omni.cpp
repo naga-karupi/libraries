@@ -1,5 +1,5 @@
 #include"../inc/Omni.h"
-#include"Dense"
+#include"eigen3/Eigen/Dense"
 
 void three_wheel_omni::operator()(float x_spd, float y_spd, float angular_v){
     

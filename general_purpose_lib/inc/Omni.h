@@ -32,17 +32,19 @@ four omni wheel 2
 */
 
 #include<array>
-#include"Dense"
+#include"eigen3/Eigen/Dense"
 
 class I_omni{
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     virtual void operator()(float x_spd, float y_spd, float angular_v) = 0;
 };
 
 class three_wheel_omni : public I_omni{
     float x, y, theta;
-    Eigen::Vector3f wheel;
-    wheel = 0, 0, 0;
+    Eigen::Vector3f wheel(0.0f, 0.0f, 0.0f);
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     three_wheel_omni();
     ~three_wheel_omni();
     void operator ()(float x_spd, float y_spd, float angular_v)override;  
@@ -50,30 +52,33 @@ public:
 
 class inv_three_wheel_omni : public I_omni{
     float x, y, theta;
-    Eigen::Vector3f wheel;
-    wheel << 0, 0, 0;
-
+ 
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     inv_three_wheel_omni(float machine);
     ~inv_three_wheel_omni();
     void operator()(float x_spd, float y_spd, float angular_v)override;
+private:
+   Eigen::Vector3d wheel(0, 0, 0);
+
 };
 
 class four_wheel_omni_1 : public I_omni{
     Eigen::Vector4f wheel;
     wheel << 0, 0, 0, 0;
 
-    const float coeficient = 1/std::sqrt(2);
+    const float coefficient = 1/std::sqrt(2);
+    const float coefficient_m = -coefficient;
     const float length_center_to_wheel;
 
-    const Eigen::MatrixXd<float, 3, 4> omni_matrix;
-    omni_matrix <<
-        -coeficient, coeficient, length_center_to_wheel,
-        coeficient, coeficient, length_center_to_wheel,
-        coeficient, -coeficient, length_center_to_wheel,
-        -coeficient, -coeficient, length_center_to_wheel;
+    const Eigen::Matrix<float, 3, 4> omni_matrix =
+        coefficient_m, coefficient, length_center_to_wheel,
+        coefficient, coefficient, length_center_to_wheel,
+        coefficient, coefficient_m, length_center_to_wheel,
+        coefficient_m, coefficient_m, length_center_to_wheel;
 
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     four_wheel_omni_1(float _length_center_to_wheel) : length_center_to_wheel(_length_center_to_wheel){}
     ~four_wheel_omni_1();
     inline void operator()(float x_spd, float y_spd, float angular_v)override;
@@ -87,3 +92,9 @@ public:
     ~four_wheel_omni_2();
     void operator()(float x_spd, float y_spd, float angular_v)override;
 };
+
+void test(){
+    int i;
+
+    Eigen::Vector3d v(2,3,4);
+}
