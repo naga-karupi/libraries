@@ -42,7 +42,7 @@ public:
 
 class three_wheel_omni : public I_omni{
     float x, y, theta;
-    Eigen::Vector3f wheel(0.0f, 0.0f, 0.0f);
+    Eigen::Vector3f wheel;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     three_wheel_omni();
@@ -59,23 +59,18 @@ public:
     ~inv_three_wheel_omni();
     void operator()(float x_spd, float y_spd, float angular_v)override;
 private:
-   Eigen::Vector3d wheel(0, 0, 0);
+   Eigen::Vector3d wheel;
 
 };
 
 class four_wheel_omni_1 : public I_omni{
     Eigen::Vector4f wheel;
-    wheel << 0, 0, 0, 0;
 
-    const float coefficient = 1/std::sqrt(2);
-    const float coefficient_m = -coefficient;
+    const float coef = 1/std::sqrt(2);
+    const float coef_m = -coef;
     const float length_center_to_wheel;
 
-    const Eigen::Matrix<float, 3, 4> omni_matrix =
-        coefficient_m, coefficient, length_center_to_wheel,
-        coefficient, coefficient, length_center_to_wheel,
-        coefficient, coefficient_m, length_center_to_wheel,
-        coefficient_m, coefficient_m, length_center_to_wheel;
+    const Eigen::Matrix<float, 3, 4> omni_matrix;
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

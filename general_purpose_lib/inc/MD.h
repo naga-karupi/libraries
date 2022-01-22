@@ -27,7 +27,6 @@ public:
         analogWrite(pwm_pin, std::abs(pwm));
     }
 };
-
 #endif
 
 #ifdef STM32_LIB_NAGA

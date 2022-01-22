@@ -3,6 +3,11 @@
 #include<stdint.h>
 #include<cmath>
 
+#ifdef STM32_LIB_NAGA
+#include<main.h>
+#endif
+
+#pragma once
 
 #ifndef ROTARY_ENCODER_HEADER
 #define ROTARY_ENCODER_HEADER
