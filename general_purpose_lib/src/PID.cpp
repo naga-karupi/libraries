@@ -1,7 +1,11 @@
-#include"../inc/PID.h"
-#include"../inc/calculus.h"
+#include"../../Inc/inc/PID.h"
+#include"../../Inc/inc/calculus.h"
 
-float PosType_PID::operator()(){
+I_PID::~I_PID(){}
+
+float PosType_PID::operator()(float diff){
+
+	set_inputs(diff);
     const float P = p_gain*this->proportional();
     const float I = i_gain*this->integral();
     const float D = d_gain*this->first_order_Difference_Equation();
@@ -9,7 +13,8 @@ float PosType_PID::operator()(){
     return P+I+D;
 }
 
-float SpeedType_PID::operator()(){
+float SpeedType_PID::operator()(float diff){
+	this->set_inputs(diff);
     const float P = p_gain*this->first_order_Difference_Equation();
     const float I = i_gain*this->proportional();
     const float D = d_gain*this->second_order_Difference_Equation();
