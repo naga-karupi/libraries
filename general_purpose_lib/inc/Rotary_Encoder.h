@@ -8,6 +8,8 @@ public:
     virtual ~I_Rotary_Encoder() = 0;
 };
 
+I_Rotary_Encoder::~I_Rotary_Encoder(){}
+
 class Arduino_Rotary_Encoder{
     
 };

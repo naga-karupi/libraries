@@ -5,7 +5,7 @@
 #include<stdint.h>
 
 class I_MD{
-    virtual ~MD() = 0
+    virtual ~I_MD() = 0;
 }
 
 class MD_Arduino : private I_MD{
@@ -35,12 +35,19 @@ public:
 		Port_A(_Port_A),PIN_A(_PIN_A), Port_B(_Port_B),PIN_B(_PIN_B), pwm_Port(_pwm_Port), pwm_Channel(_pwm_Channel){
     	HAL_TIM_PWM_Start(pwm_Port, pwm_Channel);
     }
+
     ~MD_stm() = default;
-    void operator =(int re){
+    void operator =(int32_t re){
         pwm = re;
         HAL_GPIO_WritePin(Port_A, PIN_A, pwm >= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
 	    HAL_GPIO_WritePin(Port_B, PIN_B, pwm <= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
 	    __HAL_TIM_SET_COMPARE(pwm_Port, pwm_Channel, std::abs(pwm));
     }
     
+    void operator ()(int re){
+            pwm = re;
+            HAL_GPIO_WritePin(Port_A, PIN_A, pwm >= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    	    HAL_GPIO_WritePin(Port_B, PIN_B, pwm <= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    	    __HAL_TIM_SET_COMPARE(pwm_Port, pwm_Channel, std::abs(pwm));
+        }
 };
