@@ -1,5 +1,5 @@
-#include"../../Inc/inc/PID.h"
-#include"../../Inc/inc/calculus.h"
+#include"../inc/PID.h"
+#include"../inc/calculus.h"
 
 I_PID::~I_PID(){}
 

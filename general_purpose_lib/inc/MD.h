@@ -3,7 +3,7 @@
 #include<cmath>
 #include<stdint.h>
 
-#ifdef STM32_LIB_NAGA
+#ifdef STM32_LIBRARY_NAGA
 #include<main.h>
 #endif
 
@@ -13,7 +13,7 @@ public:
 };
 
 
-#ifdef ARDUINO_LIBS_NAGA
+#ifdef ARDUINO_LIBEARY_NAGA
 class MD_Arduino final : private I_MD{
     const uint8_t PIN_A, PIN_B, pwm_pin;
     int pwm;
