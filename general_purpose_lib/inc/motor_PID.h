@@ -2,8 +2,6 @@
 *facade pattern
 */
 
-#define STM32_LIBRARY_NAGA  //delete after
-
 #include<array>
 #include<cmath>
 #include<bits/stdc++.h>
