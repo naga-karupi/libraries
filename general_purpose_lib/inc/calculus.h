@@ -1,7 +1,8 @@
 #pragma once
+
 #include<array>
 
-class Difference_Equation{
+class difference_equation{
     static constexpr float min = -100, max = 100;//undecided
     const float period;
 
@@ -21,7 +22,7 @@ class Difference_Equation{
     float at(int n) const {return inputs[surplus(suff+n)];}//i dont know
 
 public:
-    Difference_Equation(float _period = 1) : period(_period) {}
+    difference_equation(float _period = 1) : period(_period) {}
 
     void set_inputs(float in){
         suff++;

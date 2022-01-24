@@ -1,11 +1,9 @@
 #include<array>
 #include<cmath>
 #include <bits/stdc++.h>
-#include"../Inc/stm32_library/inc/MD.hpp"
-#include"../Inc/stm32_library/inc/Rotary_Encoder.h"
-#include"../Inc/inc/rad_to_pulse.h"
-#include"../Inc/inc/circle.h"
-#include"../Inc/inc/PID.h"    
+#include"../inc/MD.h"
+#include"../inc/rotary_encoder.h"
+#include"../inc/PID.h"    
 
 
     MD_stm Move_1(IN_A1_GPIO_Port, IN_A1_Pin, IN_B1_GPIO_Port, IN_B1_Pin, &htim1, TIM_CHANNEL_4);
@@ -28,11 +26,6 @@
 
 	float target_spd = 2*M_PI;
 
-	char variable[2]{
-		48,//0
-		120//x
-	};
-
 	char value[5];
 	value[4] = 10;
 	std::array<int, 4> num;
@@ -50,45 +43,8 @@ uint32_t enc_counter = 0;
 
     while (1) {
     	HAL_GPIO_TogglePin (LED1_GPIO_Port, LED1_Pin);
-    	/*
-    	 * rpm/15 = t
-    	 * t   : time
-    	 * rpm : revolution per minute
-    	 * acceleration max : 0.25 [m/s^2]
-    	 */
-
+		
     	HAL_Delay(10);//control cycle about 100Hz
-
-    	TIM_HandleTypeDef*htim = &htim2;
-
-    	enc_counter += __HAL_TIM_GET_COUNTER(htim);
-    	counter++;
-    	if(counter == 10){//get transmit num
-    		num[0] = (0xF000&enc_counter)/0x1000;
-    		num[1] = (0x0F00&enc_counter)/0x0100;
-    		num[2] = (0x00F0&enc_counter)/0x0010;
-			num[3] = (0x000F&enc_counter)/0x0001;
-
-			for(int i = 0; i < 4; i++){
-				if(num[i] <= 9 && num[i] >= 0){
-					value[i] = num[i] + 48;//num change to character of num
-				}else if(num[i] <= 15 && num[i] >= 10){
-					value[i] = num[i] + 55;//16 bit num from 10 to 15 change to character of A to F
-				}else{
-					value[i] = 89;//y
-				}
-				enc_counter = 0;
-				counter = 0;
-			}
-
-    		HAL_UART_Transmit(&huart2, (uint8_t*)variable, sizeof(variable), 0xff);
-
-    		HAL_UART_Transmit(&huart2, (uint8_t*)value, sizeof(value), 0xff);
-
-			for(int i = 0; i < 4; i++){
-				value[i] = 90;//z
-			}
-    	}
 
     	Encoder_Count_r[1] = Encoder_Count_r[0];
     	Encoder_Count_r[0] = Encoder_Right();

@@ -14,7 +14,7 @@ public:
 
 
 #ifdef ARDUINO_LIBEARY_NAGA
-class MD_Arduino final : private I_MD{
+class MD_Arduino : private I_MD{
     const uint8_t PIN_A, PIN_B, pwm_pin;
     int pwm;
 public:
@@ -29,8 +29,8 @@ public:
 };
 #endif
 
-#ifdef STM32_LIB_NAGA
-class MD_stm final : private I_MD{
+#ifdef STM32_LIBRARY_NAGA
+class MD_stm : private I_MD{
     GPIO_TypeDef *Port_A; uint16_t PIN_A;
     GPIO_TypeDef *Port_B; uint16_t PIN_B;
 
