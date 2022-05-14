@@ -15,7 +15,7 @@ if angle is more than pi,
 //const
 constexpr auto WHEEL_RADIUS = 6;  //tire radius  mm
 constexpr auto WHEEL_WIDTH = 8;   //tire to tire distance  mm
-constexpr auto C_CYCLE = 0;       //control cycle (undecided) secc
+constexpr auto C_PERIOD = 0;       //control cycle (undecided) secc
 
 //inlude
 #include<vector>
@@ -31,8 +31,6 @@ typedef int mm_int_t;
 typedef float rad_t;
 typedef float tim_f_t;
 
-//structure
-
 //enum
 enum func{
     CONSTANT_V,
@@ -46,7 +44,7 @@ enum func{
 //global variables
 
 //private 
-int pos2::spd_func(tim_f_t sec, int spd_type){
+int pos2::spd_func(tim_f_t sec, func spd_type){
 
     //lambda array
     std::function<float(tim_f_t)> (lambda_func[]) = {
@@ -60,11 +58,11 @@ int pos2::spd_func(tim_f_t sec, int spd_type){
     float distance = sec*ave_velocity;
 
     float sum_sec = 0;
-    float increase_sec = sec*C_CYCLE; 
+    float increase_sec = sec*C_PERIOD; 
     
     int lambda_num;
     float raito;
-    float confitient;
+    float coefficient;  //係数
 
     if(ave_velocity == 0){
         ave_angular_v = 1;
@@ -74,36 +72,36 @@ int pos2::spd_func(tim_f_t sec, int spd_type){
 
     switch(spd_type){
         case CONSTANT_V:
-            confitient = distance/sec;
+            coefficient = distance/sec;
             lambda_num = CONSTANT_V;
             break;
         
         case PROPORTIONAL:
-            confitient = 2*distance/(sec*sec);
+            coefficient = 2*distance/(sec*sec);
             lambda_num = PROPORTIONAL;
             break;
 
         case SQR:
-            confitient = 3*distance/(sec*sec*sec);
+            coefficient = 3*distance/(sec*sec*sec);
             lambda_num = SQR;
             break;
 
         case LOG:
-            confitient = distance/((sec+1)*logf(sec+1)-sec);
+            coefficient = distance/((sec+1)*logf(sec+1)-(sec+1));
             lambda_num = LOG;
             break;
 
         case EXP:
-            confitient = distance/(expf(sum_sec)-1);
+            coefficient = distance/(expf(sum_sec)-1);
             lambda_num = EXP;
             break;
 
         case SIN:
-            confitient = distance/1;
+            coefficient = distance/1;
 
             while(sec > sum_sec){
                 sum_sec += increase_sec;
-                velocity = confitient*sin(sum_sec*2/(sec*M_PI));
+                velocity = coefficient*sin(sum_sec*2/(sec*M_PI));
                 angular_v = velocity*raito;
 
                 MD1(velocity, angular_v);
@@ -120,7 +118,7 @@ int pos2::spd_func(tim_f_t sec, int spd_type){
 
     while(sec > sum_sec){
         sum_sec += increase_sec;
-        velocity = confitient*lambda_func[lambda_num](sum_sec);
+        velocity = coefficient*lambda_func[lambda_num](sum_sec);
         angular_v = velocity*raito;
 
         MD1(velocity, angular_v);
@@ -129,8 +127,86 @@ int pos2::spd_func(tim_f_t sec, int spd_type){
     return 0;
 }
 
+int pos2::turning_func(tim_f_t sec, func spd_type){
+
+    //lambda array
+    std::function<float(tim_f_t)> (lambda_func[]) = {
+        [](tim_f_t sum_sec){return 1.0f;},
+        [](tim_f_t sum_sec){return sum_sec;},
+        [](tim_f_t sum_sec){return sum_sec*sum_sec;},
+        [](tim_f_t sum_sec){return logf(sum_sec);},
+        [](tim_f_t sum_sec){return expf(sum_sec);},
+    };
+
+    float sum_sec = 0;
+    float increase_sec = sec*C_PERIOD; 
+    
+    int lambda_num;
+    float coefficient;  //係数
+    float angle_change = ave_angular_v*sec;
+
+    switch(spd_type){
+        case CONSTANT_V:
+            coefficient = angle_change/sec;
+            lambda_num = CONSTANT_V;
+            break;
+        
+        case PROPORTIONAL:
+            coefficient = 2*angle_change/(sec*sec);
+            lambda_num = PROPORTIONAL;
+            break;
+
+        case SQR:
+            coefficient = 3*angle_change/(sec*sec*sec);
+            lambda_num = SQR;
+            break;
+
+        case LOG:
+            coefficient = angle_change/((sec+1)*logf(sec+1)-(sec+1));
+            lambda_num = LOG;
+            break;
+
+        case EXP:
+            coefficient = angle_change/(expf(sec)-1);
+            lambda_num = EXP;
+            break;
+
+        case SIN:
+            coefficient = angle_change/1;
+
+            while(sec > sum_sec){
+                sum_sec += increase_sec;
+                velocity = confitient*sin(sum_sec*2/(sec*M_PI));
+                angular_v = velocity*raito;
+
+                MD1 = velocity + angular_v;
+                MD2 = velocity - angular_v;
+                HAL_Delay(1000*sec*C_PERIOD);
+            }
+
+            return 0;
+            break;
+
+        default:
+            return -1;
+            break;
+    }
+
+    while(sec > sum_sec){
+        sum_sec += increase_sec;
+        velocity = confitient*lambda_func[lambda_num](sum_sec);
+        angular_v = velocity*raito;
+
+		MD1 = velocity + angular_v;
+		MD2 = velocity - angular_v;
+		HAL_Delay(sec*1000*C_PERIOD);
+    }
+    return 0;
+
+}
+
 //public func in pos2
-void pos2::circle_r(mm_int_t x_coordinate_to, mm_int_t y_coordinate_to, float beat, mm_int_t radius, int spd_type){
+void pos2::circle_r(mm_int_t x_coordinate_to, mm_int_t y_coordinate_to, float beat, mm_int_t radius, func spd_type){
     mm_int_t center_x, center_y;
     mm_int_t diff_x, diff_y;
 
@@ -173,7 +249,7 @@ void pos2::circle_r(mm_int_t x_coordinate_to, mm_int_t y_coordinate_to, float be
     spd_func(sec, spd_type);
 }//write fin(tentative)
 
-void pos2::circle_c(float beat, mm_int_t radius, rad_t angle_to, mm_int_t c_posi_x, mm_int_t c_posi_y, int spd_type){
+void pos2::circle_c(float beat, mm_int_t radius, rad_t angle_to, mm_int_t c_posi_x, mm_int_t c_posi_y, func spd_type){
     mm_int_t x = x_coordinate - c_posi_x;
     mm_int_t y = y_coordinate - c_posi_y;
 
@@ -191,7 +267,7 @@ void pos2::circle_c(float beat, mm_int_t radius, rad_t angle_to, mm_int_t c_posi
     spd_func(sec, spd_type);
 }//write fin
 
-void pos2::turn(float beat, rad_t angle_to, int spd_type){
+void pos2::turn(float beat, rad_t angle_to, func spd_type){
     int bpm;//rewrite
     float sec = beat_to_sec(bpm, beat);
 
@@ -200,9 +276,10 @@ void pos2::turn(float beat, rad_t angle_to, int spd_type){
     ave_velocity = 0;
     ave_angular_v = angle_to / sec;
     
+    
 }//write fin
 
-void pos2::straight(int beat, mm_int_t coordinate_x_to, mm_int_t coordinate_y_to, int spd_type){
+void pos2::straight(int beat, mm_int_t coordinate_x_to, mm_int_t coordinate_y_to, func spd_type){
     int bpm;//rewrite
     float sec = beat_to_sec(bpm, beat);
 
