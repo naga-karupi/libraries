@@ -1,13 +1,18 @@
 #pragma once
 
-#include<main.h>
 #include<cmath>
 #include<stdint.h>
 
-class I_MD{
-    virtual ~MD() = 0
-}
+#ifdef STM32_NAGA_LIB
+#include<main.h>
+#endif //STM32_NAGA_LIB
 
+class I_MD{
+    virtual ~I_MD() = 0;
+};
+
+
+#ifdef ARDUINO_NAGA_LIB
 class MD_Arduino : private I_MD{
     const uint8_t PIN_A, PIN_B, pwm_pin;
     int pwm;
@@ -21,7 +26,9 @@ public:
         analogWrite(pwm_pin, std::abs(pwm));
     }
 };
+#endif //ARDUINO_NAGA_LIB
 
+#ifdef STM32_NAGA_LIB
 class MD_stm : private I_MD{
     GPIO_TypeDef *Port_A; uint16_t PIN_A;
     GPIO_TypeDef *Port_B; uint16_t PIN_B;
@@ -31,12 +38,14 @@ class MD_stm : private I_MD{
 
     int pwm;
 public:
-    MD_stm(GPIO_TypeDef*_Port_A, uint16_t _PIN_A, GPIO_TypeDef*_Port_B, uint16_t _PIN_B, TIM_HandleTypeDef *_pwm_Port, uint32_t _pwm_Channel):
+    __attribute__((weak)) MD_stm(GPIO_TypeDef*_Port_A, uint16_t _PIN_A, GPIO_TypeDef*_Port_B, uint16_t _PIN_B, TIM_HandleTypeDef *_pwm_Port, uint32_t _pwm_Channel):
 		Port_A(_Port_A),PIN_A(_PIN_A), Port_B(_Port_B),PIN_B(_PIN_B), pwm_Port(_pwm_Port), pwm_Channel(_pwm_Channel){
     	HAL_TIM_PWM_Start(pwm_Port, pwm_Channel);
     }
+
     ~MD_stm() = default;
-    void operator =(int re){
+
+    __attribute__((weak)) void operator =(int re){
         pwm = re;
         HAL_GPIO_WritePin(Port_A, PIN_A, pwm >= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
 	    HAL_GPIO_WritePin(Port_B, PIN_B, pwm <= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
@@ -44,3 +53,4 @@ public:
     }
     
 };
+#endif //STM32_NAGA_LIB

@@ -1,5 +1,5 @@
-#include"../inc/PID.h"
-#include"../inc/calculus.h"
+#include"../inc/PID.hpp"
+#include"../inc/calculus.hpp"
 
 float PosType_PID::operator()(){
     const float P = p_gain*this->proportional();

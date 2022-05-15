@@ -14,10 +14,6 @@ two before : suff + 1
 #pragma once
 #include<array>
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 using std::array;
 
 class Difference_Equation{
@@ -33,7 +29,7 @@ class Difference_Equation{
     void reset_sigma(){sigma = 0;}
     void clamp_sigma(){
         if (sigma>max)sigma = max; 
-        if (sigma<min)sigma = min;  
+        if (sigma<min)sigma = min;
     }
 
     static uint32_t surplus(uint32_t n) {return n&(size-1);}
@@ -54,7 +50,3 @@ public:
     float second_order_Difference_Equation() const {return (at(3) - 2*at(2) + at(1)) / (period*period);}
     float integral() const {return sigma*period;}
 };
-
-#ifdef __cplusplus
-};
-#endif

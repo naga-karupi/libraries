@@ -1,11 +1,7 @@
 //have to include calculus.h
 
 #pragma once
-#include"calculus.h"
-
-#ifdef __cplusplus
-extern "C"{
-#endif
+#include"calculus.hpp"
 
 class I_PID : public Difference_Equation{
 protected:
@@ -30,8 +26,3 @@ public:
     SpeedType_PID(float _period = 1.0f, float _p_gain = 0, float _i_gain = 0, float _d_gain = 0):I_PID(_period ,_p_gain, _i_gain, _d_gain){}
     float operator()();
 };
-
-
-#ifdef __cplusplus
-};
-#endif
