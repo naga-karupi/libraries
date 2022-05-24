@@ -4,13 +4,18 @@
  * differential: Primary retreat difference
  * integral    : sigma
  * 
- * add new input in suff -1
+ * author: naga
  * 
  */
 
 #pragma once
+
 #include<array>
 #include<cstdint>
+#include<mutex>
+
+#ifndef NAGA_LIBRARIES_DIFFERENCE_EQUATION_HPP__
+#define NAGA_LIBRARIES_DIFFERENCE_EQUATION_HPP__
 
 class ring_buff{
     static constexpr std::uint8_t size = 3;
@@ -22,7 +27,7 @@ class ring_buff{
     }
 
 public:
-    ring_buff(){}
+    ring_buff (){}
     ~ring_buff(){}
 
     float set(float set_num){
@@ -37,13 +42,15 @@ public:
 };
 
 class difference_equation{
-
     enum {
         NOW = 0,
         PREVIOUS = 1,
     };
-    static constexpr float min = -0.0f, max = 0.0f; // undecided
-    const float period;
+
+    std::once_flag once;
+
+    static constexpr float min = -10000.0f, max = 10000.0f; // undecided
+    float period;
 
     static constexpr uint32_t size = 3;
 
@@ -55,8 +62,17 @@ class difference_equation{
         if (sigma<min)sigma = min;
     }
 
+    void set_period_once(float _period){
+        period = _period;
+    }
+
 public:
-    difference_equation(float _period = 1) : period(_period) {}
+    difference_equation (){}
+    ~difference_equation(){}
+
+    void set_period(float _period){
+        std::call_once(once, set_period_once, _period);
+    }
 
     void set_inputs(float input){
         ring.set(input);
@@ -68,5 +84,7 @@ public:
 
     float proportional() {return ring[NOW];}
     float first_order_difference_equation() {return (ring[NOW] - ring[PREVIOUS])/period;}
-    float integral() {return sigma*period;}
+    float integral() {return sigma;}
 };
+
+#endif //NAGA_LIBRARIES_DIFFERENCE_EQUATION_HPP__

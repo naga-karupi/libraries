@@ -1,28 +1,24 @@
-//have to include calculus.h
+//have to include calculus.hpp
 
 #pragma once
-#include"calculus.hpp"
+#include"difference_equation.hpp"
 
-class I_PID : public Difference_Equation{
-protected:
-    const float p_gain, i_gain, d_gain;//have to set all positive nums
+#ifndef NAGA_LIBRARIES_PID_HPP__
+#define NAGA_LIBRARIES_PID_HPP__
+
+class I_PID{
 
 public:
-    I_PID(float _peripd = 1.0f, float _p_gain = 0, float _i_gain = 0, float _d_gain = 0) :  Difference_Equation(_peripd), p_gain(_p_gain), i_gain(_i_gain), d_gain(_d_gain){}
+    I_PID() {}
     virtual ~I_PID() = 0;
 };
 
 class PosType_PID : private I_PID{
-    
+    difference_equation difference;
+    const float kp, ki, kd;
 public:
-    PosType_PID(float _period = 1.0f, float _p_gain = 0, float _i_gain = 0, float _d_gain = 0):I_PID( _period, _p_gain, _i_gain, _d_gain) {}
+    PosType_PID(float _period = 1.0f, float _kp = 0, float _ki = 0, float _kd = 0):kp(_kp), ki(_ki), kd(_kd){}
     float operator()();
 };
 
-
-class SpeedType_PID : private I_PID{
-    
-public:
-    SpeedType_PID(float _period = 1.0f, float _p_gain = 0, float _i_gain = 0, float _d_gain = 0):I_PID(_period ,_p_gain, _i_gain, _d_gain){}
-    float operator()();
-};
+#endif //NAGA_LIBRARIES_PID_HPP__
