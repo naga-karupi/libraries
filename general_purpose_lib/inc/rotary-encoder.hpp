@@ -1,8 +1,17 @@
-#pragma once
+/* 
+ * 
+ * 
+ * 
+ * 
+*/
 
+#pragma once
 
 #include<stdint.h>
 #include<cmath>
+
+#ifndef NAGA_LIBRARIES_ROTARY_ENCODER_HPP__
+#define NAGA_LIBRARIES_ROTARY_ENCODER_HPP__
 
 #ifdef ARDUINO_NAGA_LIB
 #include<main.h>
@@ -35,3 +44,4 @@ public:;
     }
 };
 #endif //STM32_NAGA_LIB
+#endif //NAGA_LIBRARIES_ROTARY_ENCODER_HPP__
