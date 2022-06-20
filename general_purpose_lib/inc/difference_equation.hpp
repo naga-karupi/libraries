@@ -11,9 +11,8 @@
 
 #pragma once
 
-#include<array>
-#include<cstdint>
-#include<mutex>
+#include <array>
+#include <cstdint>
 
 #ifndef NAGA_LIBRARIES_DIFFERENCE_EQUATION_HPP__
 #define NAGA_LIBRARIES_DIFFERENCE_EQUATION_HPP__
@@ -49,8 +48,6 @@ namespace naga_libs{
             PREVIOUS = 1,
         };
 
-        std::once_flag once;
-
         static constexpr float min = -10000.0f, max = 10000.0f; // undecided
         float period;
 
@@ -73,7 +70,13 @@ namespace naga_libs{
         ~difference_equation(){}
 
         void set_period(float _period){
-            std::call_once(once, set_period_once, _period);
+            static int i = 0;
+
+            if(!i){
+                i++;
+                set_period(_period);
+            }
+            
         }
 
         void set_inputs(float input){
